@@ -24,7 +24,7 @@ function onConnect(socket) {
     socket.on('disconnect', () => {
         console.log('socket disconnected', socket.id)
         connectedids.delete(socket.id);
-        io.emmit('client-total', connectedids.size)
+        io.emit('client-total', connectedids.size)
 
     })
 }
