@@ -8,6 +8,13 @@ const io = require('socket.io')(server)
 
 app.use(express.static(path.join(__dirname,'public')))
 
-io.on('connection',(socket)=> {
+//to create the set of socketid
+let connectedids = new Set()
+
+io.on('connection', onConnect)
+
+function onConnect(socket){
     console.log(socket.id) // socket id { AND if we open in another brower tab, it produce another serverid} 
-})
+    connectedids.add(socket.id)
+    //console.log(connectedids); {To check}
+}
