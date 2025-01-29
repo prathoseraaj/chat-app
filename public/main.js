@@ -36,9 +36,9 @@ socket.on('chat-message', (data) => {
 function addmessage(isownmessage, data) {
     clearfeedback()
     const element = `
-    <li class=${isownmessage?"message-right":"message-left"}>
+    <li class="${isownmessage ? 'message-right' : 'message-left'}">
         <p class="message">${data.message} </p>
-        <span>${data.name} ● ${moment(data.datetime).fromNow()}</span>
+        <span id="spann">${data.name} ● ${moment(data.dateTime || new Date()).fromNow()}</span>
     </li>`
 
     messagecontainer.innerHTML += element

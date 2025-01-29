@@ -9,10 +9,6 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; */
   display: grid;
   place-items: center;
   background-color: #ebebeb;
@@ -91,8 +87,12 @@ body {
 .message-right > p > span {
   display: block;
   font-style: italic;
-  font-size: 12px;
+  font-size: 12px !important;
   margin-top: 4px;
+}
+
+#spann{
+  font-size: 12px;
 }
 
 .feedback {
