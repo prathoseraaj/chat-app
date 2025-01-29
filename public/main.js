@@ -4,11 +4,22 @@ const messagecontainer = document.getElementById('message-container')
 const nameinput = document.getElementById('name-input')
 const messageform = document.getElementById('message-form')
 const messageinput = document.getElementById('message-input')
+let currentRoom = null;
 
 messageform.addEventListener('submit', (e) => {
     e.preventDefault();
     sendMessage();
 })
+
+const roominput = document.getElementById('room-input');
+document.getElementById('join-room').addEventListener('click', () => {
+    const roomID = roominput.value.trim() || Date.now().toString();  
+    if (currentRoom !== roomID) {  
+        socket.emit('joinRoom', roomID);  
+        currentRoom = roomID;  
+        document.getElementById('room-name').textContent = `Room: ${roomID}`;  // Update room name display
+    }
+});
 
 socket.on('client-total', (data) => {
     console.log(`Total client: ${data}`)
@@ -17,11 +28,16 @@ socket.on('client-total', (data) => {
 
 function sendMessage() {
     if (messageinput.value === '') return
+    if (!currentRoom) {
+        alert('Please join a room first!');
+        return;
+    }
     console.log(messageinput.value);
     const data = {
         name: nameinput.value,
         message: messageinput.value,
         datetime: new Date(),
+        room: currentRoom,
     }
     socket.emit('message', data)
     addmessage(true,data)

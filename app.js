@@ -1,41 +1,50 @@
-const express = require('express')
-const path = require('path')
-const app = express()
-const PORT = process.env.PORT || 4000
-const server = app.listen(PORT, () => console.log(`💬 Server on port ${PORT}`))
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 4000;
+const server = app.listen(PORT, () => console.log(`💬 Server on port ${PORT}`));
 
-const io = require('socket.io')(server)
+const io = require('socket.io')(server);
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'public')))
+let connectedUsers = {}; // Stores { socket.id: roomID }
+let connectedids = new Set(); // Stores unique socket IDs
 
-//to create the set of socketid
-let connectedids = new Set()
+io.on('connection', (socket) => {
+    console.log(`User connected: ${socket.id}`);
+    connectedids.add(socket.id);
 
-io.on('connection', onConnect)
+    io.emit('client-total', connectedids.size);
 
-function onConnect(socket) {
-    console.log(socket.id) // socket id { AND if we open in another brower tab, it produce another serverid} 
-    connectedids.add(socket.id)
-    //console.log(connectedids); {To check}
+    // Handle room joining
+    socket.on('joinRoom', (roomID) => {
+        socket.join(roomID);
+        connectedUsers[socket.id] = roomID;
+        console.log(`${socket.id} joined room: ${roomID}`);
+    });
 
+    // Handle messages (send only within the correct room)
+    socket.on('message', (data) => {
+        const roomID = connectedUsers[socket.id];
+        if (roomID) {
+            console.log(`Message in room ${roomID}:`, data);
+            socket.to(roomID).emit('chat-message', data); // Broadcast to the same room only
+        }
+    });
 
-    io.emit('client-total', connectedids.size)
+    // Handle feedback (also room-specific)
+    socket.on('feedback', (data) => {
+        const roomID = connectedUsers[socket.id];
+        if (roomID) {
+            socket.to(roomID).emit('feedback', data);
+        }
+    });
 
+    // Handle disconnection
     socket.on('disconnect', () => {
-        console.log('socket disconnected', socket.id)
+        console.log(`User disconnected: ${socket.id}`);
         connectedids.delete(socket.id);
-        io.emit('client-total', connectedids.size)
-
-    })
-
-    socket.on('message',(data)=>{
-        console.log(data)
-        socket.broadcast.emit('chat-message',(data))
-        })
-    
-    socket.on('feedback',(data) =>{
-        socket.broadcast.emit('feedback',data)
-    })
-}
-
-
+        delete connectedUsers[socket.id];
+        io.emit('client-total', connectedids.size);
+    });
+});
