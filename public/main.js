@@ -17,5 +17,11 @@ socket.on('client-total',(data) =>{
 
 function sendMessage (){
     console.log(messageinput.value);
+    const data = {
+        name: nameinput.value,
+        message: messageinput.value,
+        datetime: new Date(),       
+    }
+    socket.emit('message',data)
 }
 
