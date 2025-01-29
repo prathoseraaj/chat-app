@@ -24,7 +24,3 @@ function sendMessage (){
     }
     socket.emit('message',data)
 }
-
-socket.on('chat-message',(data)=>{
-    console.log(data)
-})
