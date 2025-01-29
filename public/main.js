@@ -1,5 +1,4 @@
-const socket = io('https://convox.vercel.app/')
-
+const socket = io()
 const messagecontainer = document.getElementById('message-container')
 const nameinput = document.getElementById('name-input')
 const messageform = document.getElementById('message-form')

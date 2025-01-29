@@ -4,12 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const server = app.listen(PORT, () => console.log(`💬 Server on port ${PORT}`));
 
-const io = require('socket.io')(server, {
-    cors: {
-        origin: "https://your-vercel-app-url.com", 
-        methods: ["GET", "POST"]
-    }
-});
+const io = require('socket.io')(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 let connectedUsers = {}; // Stores { socket.id: roomID }
