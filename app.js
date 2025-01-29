@@ -27,4 +27,11 @@ function onConnect(socket) {
         io.emit('client-total', connectedids.size)
 
     })
+
+    socket.on('message',(data)=>{
+        console.log(data)
+        socket.broadcast.emit('chat-message',(data))
+        })
 }
+
+
